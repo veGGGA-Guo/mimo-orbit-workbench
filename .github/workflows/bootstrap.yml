@@ -632,7 +632,7 @@ jobs:
           AAAAAAAAAAAA/3wAAHBhY2thZ2UuanNvblBLAQIUABQAAAAIAIiVq1z3elv7fgUAAG8LAAAJAAAA
           AAAAAAAAAAAAAIB+AABSRUFETUUubWRQSwECFAAUAAAACADXlKtcjQZe6/0AAACAAQAADgAAAAAA
           AAAAAAAAAAAlhAAAdml0ZS5jb25maWcuanNQSwUGAAAAAA4ADgBJAwAAToUAAAAA
-B64
+          B64
           base64 -d project.zip.b64 > project.zip
           python - <<'PY'
           from zipfile import ZipFile
