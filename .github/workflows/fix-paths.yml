@@ -1,0 +1,53 @@
+name: Fix repository paths
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-paths:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Convert Windows-style filenames to directories
+        run: |
+          set -e
+          python - <<'PY'
+          from pathlib import Path
+          import shutil
+
+          mappings = {
+              'api\\mimoClient.js': 'api/mimoClient.js',
+              'api\\mimoClient.test.js': 'api/mimoClient.test.js',
+              'api\\server.js': 'api/server.js',
+              'docs\\APPLICATION.md': 'docs/APPLICATION.md',
+              'docs\\RESEARCH.md': 'docs/RESEARCH.md',
+              'src\\main.jsx': 'src/main.jsx',
+              'src\\styles.css': 'src/styles.css',
+          }
+
+          for source, target in mappings.items():
+              src = Path(source)
+              dst = Path(target)
+              if src.exists():
+                  dst.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.move(str(src), str(dst))
+
+          for workflow in [Path('.github/workflows/fix-paths.yml')]:
+              if workflow.exists():
+                  workflow.unlink()
+          PY
+
+      - name: Commit normalized paths
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Normalize project directory structure" || exit 0
+          git push
